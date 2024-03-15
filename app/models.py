@@ -13,23 +13,11 @@ class Post(Base):
     title = Column(String, nullable=False)
     desc = Column(String, nullable=False)
 
-    media = relationship("Media", uselist=True, back_populates="post")
-    # likes = relationship("Like")
+    likes = relationship("Like")
 
     def to_json(self) -> Dict[str, Any]:
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
-class Media(Base):
-    __tablename__ = "medias"
-
-    id = Column(Integer, primary_key=True)
-    url = Column(String, nullable=False)
-    post_id = Column(Integer, ForeignKey("posts.id"))
-
-    post = relationship("Post", back_populates="media")
-
-    def to_json(self) -> Dict[str, Any]:
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 class Like(Base):
     __tablename__ = "likes"
