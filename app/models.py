@@ -9,6 +9,7 @@ class Post(Base):
     __tablename__ = "posts"
 
     id = Column(Integer, primary_key=True)
+    year = Column(Integer)
     tags = Column(String)
     title = Column(String, nullable=False)
     desc = Column(String, nullable=False)
