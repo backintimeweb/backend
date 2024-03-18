@@ -21,14 +21,15 @@ async def add_new_post(post: PostIn) -> Post:
 
     return new_post
 
-# @app.put('/api/posts', response_model=PostIn)
-# async def update_post(post: PostIn) -> Post:
-#     return await update_post_by_year(post.dict())
-
 @app.get('/api/posts', response_model=List[PostOut])
 async def get_all_posts() -> List[Post]:
     all_posts_info = await find_all_posts_from_db()
     return all_posts_info
+
+@app.put('/api/posts/{year}', response_model=PostIn)
+async def update_post(year: int, post: PostIn) -> Optional[Union[Post,None]]:
+    updated_post = await update_post_by_year(year, post.dict())
+    return updated_post
 
 @app.delete('/api/posts/{year}', response_model=PostOut)
 async def delete_post(year: int = Path(..., title="Year of the Post")) -> Post:

@@ -38,17 +38,17 @@ async def delete_post_by_year(year: int) -> Optional[Union[Post, None]]:
 
     return None
 
-async def update_post_by_year(post: Dict) -> Optional[Union[Post, None]]:
+async def update_post_by_year(year, post: Dict) -> Optional[Union[Post, None]]:
     stmt = (
         update(Post).
-        where(Post.year == int(post['year'])).
+        where(Post.year == int(year)).
         values(post).
         returning(Post)
     )
-    result = await session.execute(stmt)
+    res = await session.execute(stmt)
     await session.commit()
 
-    return result.first()
+    return Post(**post) if res else None
 
 async def find_post_by_year(year: int) -> Optional[Union[Post, None]]:
     res = await session.scalars(select(Post).where(Post.year == int(year)))
