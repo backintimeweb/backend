@@ -5,8 +5,8 @@ services:
       image: postgres
       container_name: postgres
       environment:
-        - POSTGRES_USER=admin
-        - POSTGRES_PASSWORD=admin
+        - POSTGRES_USER=${POSTGRES_USER}
+        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       volumes:
         - postgres_data:/var/lib/postgresql/data
       ports:
