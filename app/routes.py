@@ -1,4 +1,9 @@
-from fastapi import FastAPI, Path
+from fastapi import FastAPI, Path, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+import os
+from dotenv import load_dotenv
+from jose import JWTError, jwt
+from fastapi.security import OAuth2PasswordBearer
 from typing import List, Optional, Union
 
 from app.models import Post
@@ -6,6 +11,24 @@ from app.helpers import to_shutdown, to_start, add_new_post_to_db, find_all_post
 from app.schemas import PostIn, PostOut
 
 app = FastAPI()
+
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
+
+origins = [
+    os.getenv("ALLOW_HOST")
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET"],
+    allow_headers=["*"],
+)
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @app.on_event("startup")
 async def startup():
@@ -16,10 +39,13 @@ async def shutdown():
     await to_shutdown()
 
 @app.post('/api/posts', response_model=PostIn)
-async def add_new_post(post: PostIn) -> Post:
-    new_post = await add_new_post_to_db(post.dict())
-
-    return new_post
+async def add_new_post(post: PostIn, token: str = Depends(oauth2_scheme)) -> Post:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        new_post = await add_new_post_to_db(post.dict())
+        return new_post
+    except JWTError as exc:
+        raise HTTPException(status_code=401, detail=str(exc))
 
 @app.get('/api/posts', response_model=List[PostOut])
 async def get_all_posts() -> List[Post]:
@@ -27,13 +53,21 @@ async def get_all_posts() -> List[Post]:
     return all_posts_info
 
 @app.put('/api/posts/{year}', response_model=PostIn)
-async def update_post(year: int, post: PostIn) -> Optional[Union[Post,None]]:
-    updated_post = await update_post_by_year(year, post.dict())
-    return updated_post
+async def update_post(year: int, post: PostIn, token: str = Depends(oauth2_scheme)) -> Optional[Union[Post,None]]:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        updated_post = await update_post_by_year(year, post.dict())
+        return updated_post
+    except JWTError as exc:
+        raise HTTPException(status_code=401, detail=str(exc))
 
 @app.delete('/api/posts/{year}', response_model=PostOut)
-async def delete_post(year: int = Path(..., title="Year of the Post")) -> Post:
-    return await delete_post_by_year(year)
+async def delete_post(year: int = Path(..., title="Year of the Post"), token: str = Depends(oauth2_scheme)) -> Post:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return await delete_post_by_year(year)
+    except JWTError as exc:
+        raise HTTPException(status_code=401, detail=str(exc))
 
 @app.get('/api/posts/{year}', response_model=PostOut)
 async def get_post(year: int = Path(..., title="Year of the Post")) -> Optional[Union[Post, None]]:

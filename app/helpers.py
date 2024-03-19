@@ -1,6 +1,7 @@
 from typing import Dict, List, Optional, Union
 from sqlalchemy.future import select
 from sqlalchemy import update
+import nh3
 
 from .database import engine, session, Base
 from .models import Post
@@ -18,6 +19,7 @@ async def to_shutdown():
 
 
 async def add_new_post_to_db(post: Dict) -> Post:
+    post["desc"] = nh3.clean(post["desc"])
     new_post = Post(**post)
 
     session.add(new_post)
@@ -39,6 +41,7 @@ async def delete_post_by_year(year: int) -> Optional[Union[Post, None]]:
     return None
 
 async def update_post_by_year(year, post: Dict) -> Optional[Union[Post, None]]:
+    post["desc"] = nh3.clean(post["desc"])
     stmt = (
         update(Post).
         where(Post.year == int(year)).

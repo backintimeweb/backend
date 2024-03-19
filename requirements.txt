@@ -2,4 +2,7 @@ python-dotenv~=0.21.1
 SQLAlchemy~=2.0.25
 fastapi~=0.70.0
 asyncpg
-uvicorn
+uvicorn~=0.15.0
+pydantic~=1.10.4
+python-jose
+nh3
