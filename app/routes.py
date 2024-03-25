@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 from jose import JWTError, jwt
 from fastapi.security import OAuth2PasswordBearer
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Any
 import sentry_sdk
 
 from app.models import Post
@@ -26,8 +26,8 @@ sentry_sdk.init(
     profiles_sample_rate=1.0
 )
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
+SECRET_KEY: Any = os.getenv("SECRET_KEY")
+ALGORITHM: Any = os.getenv("ALGORITHM")
 
 origins = [
     os.getenv("ALLOW_HOST")
@@ -51,7 +51,7 @@ async def shutdown():
     await to_shutdown()
 
 @app.post('/api/posts', response_model=PostIn)
-async def add_new_post(post: PostIn, token: str = Depends(oauth2_scheme)) -> Post:
+async def add_new_post(post: PostIn, token: Union[str,bytes] = Depends(oauth2_scheme)) -> Post:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         new_post = await add_new_post_to_db(post.dict())
@@ -74,7 +74,7 @@ async def update_post(year: int, post: PostIn, token: str = Depends(oauth2_schem
         raise HTTPException(status_code=401, detail=str(exc))
 
 @app.delete('/api/posts/{year}', response_model=PostOut)
-async def delete_post(year: int = Path(..., title="Year of the Post"), token: str = Depends(oauth2_scheme)) -> Post:
+async def delete_post(year: int = Path(..., title="Year of the Post"), token: str = Depends(oauth2_scheme)) -> Optional[Union[Post, None]]:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return await delete_post_by_year(year)
