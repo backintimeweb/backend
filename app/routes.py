@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from jose import JWTError, jwt
 from fastapi.security import OAuth2PasswordBearer
 from typing import List, Optional, Union
+import sentry_sdk
 
 from app.models import Post
 from app.helpers import to_shutdown, to_start, add_new_post_to_db, find_all_posts_from_db, find_post_by_year,delete_post_by_year, update_post_by_year
@@ -13,6 +14,17 @@ from app.schemas import PostIn, PostOut
 app = FastAPI()
 
 load_dotenv()
+
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN"),
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    traces_sample_rate=1.0,
+    # Set profiles_sample_rate to 1.0 to profile 100%
+    # of sampled transactions.
+    # We recommend adjusting this value in production.
+    profiles_sample_rate=1.0
+)
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
