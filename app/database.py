@@ -1,8 +1,8 @@
-from typing import Optional, Any
-
 import os
+from typing import Any
+
 from dotenv import load_dotenv
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
 
 load_dotenv()
@@ -14,4 +14,3 @@ async_session = async_sessionmaker(
 )
 session = async_session()
 Base = declarative_base()
-

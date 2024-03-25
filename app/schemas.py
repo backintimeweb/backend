@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class BasePost(BaseModel):
     year: int
     tags: str
@@ -12,6 +13,7 @@ class PostIn(BasePost):
 
     class Config:
         orm_mode = True
+
 
 class PostOut(BasePost):
     id: int
