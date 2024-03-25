@@ -38,14 +38,14 @@ sentry_sdk.init(
 SECRET_KEY: Any = os.getenv("SECRET_KEY")
 ALGORITHM: Any = os.getenv("ALGORITHM")
 
-# origins = [os.getenv("ALLOW_HOST")]
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=origins,
-#     allow_credentials=True,
-#     allow_methods=["GET"],
-#     allow_headers=["*"],
-# )
+origins = [os.getenv("ALLOW_HOST")]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allow_headers=["*"],
+)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
