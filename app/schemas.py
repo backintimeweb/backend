@@ -20,3 +20,9 @@ class PostOut(BasePost):
 
     class Config:
         orm_mode = True
+class PostOutByYear(BaseModel):
+    id: int
+    year: int
+
+    class Config:
+        orm_mode = True

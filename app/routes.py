@@ -1,5 +1,5 @@
 import os
-from typing import Any, List, Optional, Union
+from typing import Any, List, Optional, Union, Dict
 
 import sentry_sdk
 from dotenv import load_dotenv
@@ -18,7 +18,7 @@ from app.helpers import (
     update_post_by_year,
 )
 from app.models import Post
-from app.schemas import PostIn, PostOut
+from app.schemas import PostIn, PostOut, PostOutByYear
 
 app = FastAPI()
 
@@ -71,8 +71,8 @@ async def add_new_post(
         raise HTTPException(status_code=401, detail=str(exc))
 
 
-@app.get("/api/posts", response_model=List[PostOut])
-async def get_all_posts() -> List[Post]:
+@app.get("/api/posts", response_model=List[PostOutByYear])
+async def get_all_posts() -> List[Dict[str,Any]]:
     return await find_all_posts_from_db()
 
 
