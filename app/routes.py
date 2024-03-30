@@ -59,7 +59,6 @@ async def startup():
 async def shutdown():
     await to_shutdown()
 
-
 @app.post("/api/posts", response_model=PostIn)
 async def add_new_post(
     post: PostIn, token: Union[str, bytes] = Depends(oauth2_scheme)
@@ -69,7 +68,6 @@ async def add_new_post(
         return await add_new_post_to_db(post.dict())
     except JWTError as exc:
         raise HTTPException(status_code=401, detail=str(exc))
-
 
 @app.get("/api/posts", response_model=List[PostOutByYear])
 async def get_all_posts() -> List[Dict[str,Any]]:
