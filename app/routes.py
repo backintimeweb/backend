@@ -3,8 +3,10 @@ from typing import Any, List, Optional, Union, Dict
 
 import sentry_sdk
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, HTTPException, Path
+from fastapi import Depends, FastAPI, HTTPException, Path,Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
@@ -21,6 +23,8 @@ from app.models import Post
 from app.schemas import PostIn, PostOut, PostOutByYear
 
 app = FastAPI()
+static = os.path.dirname(os.path.abspath(__file__)).replace("/app", "/static")
+templates = Jinja2Templates(directory=static)
 
 load_dotenv()
 
@@ -101,3 +105,10 @@ async def get_post(
     year: int = Path(..., title="Year of the Post")
 ) -> Optional[Union[Post, None]]:
     return await find_post_by_year(year)
+
+@app.get("/api/posts/html/{year}", response_class=HTMLResponse)
+async def get_post_html(
+    request: Request,
+    year: int = Path(..., title="Year of the Post")
+) -> HTMLResponse:
+    return templates.TemplateResponse(f"{year}.html", {"request": request})

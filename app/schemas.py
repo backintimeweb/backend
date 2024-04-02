@@ -5,7 +5,6 @@ class BasePost(BaseModel):
     year: int
     tags: str
     title: str
-    desc: str
 
 
 class PostIn(BasePost):
