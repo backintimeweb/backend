@@ -15,7 +15,6 @@ from app.helpers import (
     delete_post_by_year,
     find_all_posts_from_db,
     find_post_by_year,
-    to_shutdown,
     to_start,
     update_post_by_year,
 )
@@ -59,9 +58,9 @@ async def startup():
     await to_start()
 
 
-@app.on_event("shutdown")
-async def shutdown():
-    await to_shutdown()
+# @app.on_event("shutdown")
+# async def shutdown():
+#     await to_shutdown()
 
 @app.post("/api/posts", response_model=PostIn)
 async def add_new_post(

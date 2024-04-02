@@ -12,9 +12,9 @@ async def to_start():
         await conn.run_sync(Base.metadata.create_all)
 
 
-async def to_shutdown():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
+# async def to_shutdown():
+#     async with engine.begin() as conn:
+#         await conn.run_sync(Base.metadata.drop_all)
 
 
 async def add_new_post_to_db(post: Dict) -> Post:
