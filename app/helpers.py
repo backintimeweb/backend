@@ -21,6 +21,7 @@ async def add_new_post_to_db(post: Dict) -> Post:
     new_post = Post(**post)
 
     session.add(new_post)
+    await session.commit()
 
     return new_post
 
@@ -36,6 +37,7 @@ async def delete_post_by_year(year: int) -> Optional[Union[Post, None]]:
 
     if first_res:
         await session.delete(first_res)
+        await session.commit()
         return first_res
 
     return None
