@@ -28,7 +28,11 @@ async def add_new_post_to_db(post: Dict) -> Post:
 
 async def find_all_posts_from_db() -> List[Dict[str, Any]]:
     result = await session.scalars(select(Post))
-    return [{"id": res.id, "year": res.year} for res in result]
+
+    result_list = [{"id": res.id, "year": res.year} for res in result]
+
+    result_list.sort(key=lambda x: x["year"])
+    return result_list
 
 
 async def delete_post_by_year(year: int) -> Optional[Union[Post, None]]:
